@@ -1,8 +1,10 @@
 import React from 'react';
+import Header from '../Header';
 const Home = () => {
   return (
     <div>
-      <div>Home !</div>
+      <Header/>
+      <h1>Home !</h1>
       <button onClick={() => alert('click')}>
         click
       </button>

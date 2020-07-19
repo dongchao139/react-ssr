@@ -3,7 +3,6 @@ import React from 'react';
 import Router from 'koa-router';
 import serve from 'koa-static';
 import bodyParser from 'koa-bodyparser';
-import Home from './containers/Home/index';
 import {renderToNodeStream} from 'react-dom/server';
 import {mergeStringToStream} from './utils/StreamUtil';
 import {serverRender} from '../configs/local.config';
@@ -15,10 +14,9 @@ const router = new Router();
 
 app.use(serve("public"));
 
-
-router.get('/', async (ctx, _next) => {
+router.get(/.*/, async (ctx, _next) => {
   const content = (
-    <StaticRouter location={ctx.req.path} context={{}}>
+    <StaticRouter location={ctx.request.url} context={{}}>
       {routes}
     </StaticRouter>
   );
