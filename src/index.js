@@ -7,19 +7,28 @@ import Home from './containers/Home/index';
 import {renderToNodeStream} from 'react-dom/server';
 import {mergeStringToStream} from './utils/StreamUtil';
 import {serverRender} from '../configs/local.config';
+import {StaticRouter} from 'react-router-dom';
+import routes from './Routes';
 
 const app = new Koa();
 const router = new Router();
 
 app.use(serve("public"));
 
+
 router.get('/', async (ctx, _next) => {
+  const content = (
+    <StaticRouter location={ctx.req.path} context={{}}>
+      {routes}
+    </StaticRouter>
+  );
+
   ctx.response.type = 'html';
   let stream = null;
   if (!serverRender) {
     stream = '';
   } else {
-    stream = renderToNodeStream(<Home/>);
+    stream = renderToNodeStream(content);
   }
   ctx.response.body = mergeStringToStream(
     `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
