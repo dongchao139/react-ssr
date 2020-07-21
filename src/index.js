@@ -9,7 +9,7 @@ import {serverRender} from '../configs/local.config';
 import {StaticRouter} from 'react-router-dom';
 import routes from './Routes';
 import { Provider } from 'react-redux';
-import { getStore } from '../store/index';
+import { getStore } from './store/index';
 
 const app = new Koa();
 const router = new Router();

@@ -1,7 +1,7 @@
 import React from 'react';
 import Header from '../Header';
 import {connect} from 'react-redux';
-import { lensProp, view } from 'ramda';
+import { lens, view, path, assocPath } from 'ramda';
 
 const Home = (props) => {
   return (
@@ -16,7 +16,7 @@ const Home = (props) => {
 };
 
 const mapStateToProps = (state) => {
-  const nameLens = lensProp('name');
+  const nameLens = lens(path(['home','name'], assocPath(['home','name'])));
   return {
     name: view(nameLens, state)
   }
