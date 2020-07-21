@@ -8,6 +8,8 @@ import {mergeStringToStream} from './utils/StreamUtil';
 import {serverRender} from '../configs/local.config';
 import {StaticRouter} from 'react-router-dom';
 import routes from './Routes';
+import { Provider } from 'react-redux';
+import { getStore } from '../store/index';
 
 const app = new Koa();
 const router = new Router();
@@ -15,10 +17,13 @@ const router = new Router();
 app.use(serve("public"));
 
 router.get(/.*/, async (ctx, _next) => {
+  
   const content = (
-    <StaticRouter location={ctx.request.url} context={{}}>
-      {routes}
-    </StaticRouter>
+    <Provider store={getStore()}>
+      <StaticRouter location={ctx.request.url} context={{}}>
+        {routes}
+      </StaticRouter>
+    </Provider>
   );
 
   ctx.response.type = 'html';

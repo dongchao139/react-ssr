@@ -1,10 +1,13 @@
 import React from 'react';
 import Header from '../Header';
-const Home = () => {
+import {connect} from 'react-redux';
+import { lensProp, view } from 'ramda';
+
+const Home = (props) => {
   return (
     <div>
       <Header/>
-      <h1>Home !</h1>
+      <h1>Hello {props.name}!</h1>
       <button onClick={() => alert('click')}>
         click
       </button>
@@ -12,4 +15,11 @@ const Home = () => {
   )
 };
 
-export default Home;
+const mapStateToProps = (state) => {
+  const nameLens = lensProp('name');
+  return {
+    name: view(nameLens, state)
+  }
+}
+
+export default connect(mapStateToProps, null)(Home);
