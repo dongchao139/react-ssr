@@ -9,8 +9,7 @@ const reducer = (state = defaultState, action) => {
   switch (action.type) {
     case 'initHomeList':
       const lens = lensProp('newsList');
-      const newState = set(lens, action.payload)(state);
-      return newState;
+      return set(lens, action.payload)(state);
     default:
       return state;
   }
