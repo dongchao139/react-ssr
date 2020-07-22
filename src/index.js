@@ -3,13 +3,14 @@ import React from 'react';
 import Router from 'koa-router';
 import serve from 'koa-static';
 import bodyParser from 'koa-bodyparser';
-import {renderToNodeStream} from 'react-dom/server';
-import {mergeStringToStream} from './utils/StreamUtil';
-import {serverRender} from '../configs/local.config';
-import {StaticRouter} from 'react-router-dom';
+import { renderToNodeStream } from 'react-dom/server';
+import { mergeStringToStream } from './utils/StreamUtil';
+import { serverRender } from '../configs/local.config';
+import { StaticRouter, Route } from 'react-router-dom';
 import routes from './Routes';
 import { Provider } from 'react-redux';
 import { getStore } from './store/index';
+import { matchRoutes } from 'react-router-config';
 
 const app = new Koa();
 const router = new Router();
@@ -17,16 +18,27 @@ const router = new Router();
 app.use(serve("public"));
 
 router.get(/.*/, async (ctx, _next) => {
-  
+  const store = getStore();
+
+  const promises = [];
+  const matchedRoutes = matchRoutes(routes, ctx.request.url);
+  matchedRoutes.forEach(item => {
+    promises.push(item.route.loadData(store))
+  });
+
+  await Promise.all(promises);
+  ctx.response.type = 'html';
   const content = (
-    <Provider store={getStore()}>
+    <Provider store={store}>
       <StaticRouter location={ctx.request.url} context={{}}>
-        {routes}
+        <div>
+          {routes.map(route => (
+            <Route {...route} />
+          ))}
+        </div>
       </StaticRouter>
     </Provider>
   );
-
-  ctx.response.type = 'html';
   let stream = null;
   if (!serverRender) {
     stream = '';
@@ -35,11 +47,12 @@ router.get(/.*/, async (ctx, _next) => {
   }
   ctx.response.body = mergeStringToStream(
     `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title></head><body><div id='root'>`,
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>Document</title></head><body><div id='root'>`,
     stream,
-    `</div><script src="/bundle.js"></script></body></html>`
+    `</div><script>window.context = ${JSON.stringify(store.getState())}</script>
+    <script src="/bundle.js"></script></body></html>`
   );
 });
 

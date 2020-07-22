@@ -8,7 +8,11 @@ import * as actions from './store/actions';
 class Home extends React.Component {
 
   componentDidMount() {
-    return this.props.getHomeList();
+    this.props.getHomeList();
+  }
+
+  static loadData(store) {
+    return store.dispatch(actions.getHomeList());
   }
 
   render() {

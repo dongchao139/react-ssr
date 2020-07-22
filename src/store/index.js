@@ -8,7 +8,13 @@ const reducer = combineReducers({
 });
 
 export const getStore = () => {
-  const store = createStore(reducer, applyMiddleware(thunk))
-  return store;
+  if (typeof window !== 'undefined') {
+    const defaultState = window.context;
+    const store = createStore(reducer, defaultState, applyMiddleware(thunk))
+    return store;
+  } else {
+    const store = createStore(reducer, applyMiddleware(thunk))
+    return store;
+  }
 }
 

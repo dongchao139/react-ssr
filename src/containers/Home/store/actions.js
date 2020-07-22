@@ -7,7 +7,7 @@ export const getHomeList = () => {
         dispatch({
           type: 'initHomeList',
           payload: res.data.data
-        })
+        });
       });
   }
 }
